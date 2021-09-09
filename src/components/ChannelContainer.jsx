@@ -1,6 +1,6 @@
 import React from 'react'
 
-function ChannelContainer() {
+const ChannelContainer = () => {
     return (
         <div>
             <h1>Hello 1 </h1>
