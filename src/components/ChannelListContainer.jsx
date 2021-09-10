@@ -71,3 +71,7 @@ const ChannelListContainer = () => {
 };
 
 export default ChannelListContainer;
+
+//https://www.youtube.com/watch?v=MJzbJQLGehs&t=273s
+
+//minute 50:18 
