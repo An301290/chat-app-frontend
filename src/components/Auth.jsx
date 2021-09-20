@@ -4,31 +4,57 @@ import axios from "axios";
 
 import signinImage from "../assets/together.png";
 
+const cookies = new Cookies();
+
 const initialState = {
-    fullName: '',
-    username: '',
-    password: '',
-    confirmPassword: '',
-    phoneNumber: '',
-    avatarURL: '',
-}
+  fullName: "",
+  username: "",
+  password: "",
+  confirmPassword: "",
+  phoneNumber: "",
+  avatarURL: "",
+};
 
 const Auth = () => {
+  const [form, setForm] = useState(initialState);
+  const [isSignup, setIsSignup] = useState(true);
 
-const [form, setForm] = useState(initialState);
-const [isSignup, setIsSignup] = useState(true);
-
-const handleChange = (e) => {
-      setForm({...form, [e.target.name]: e.target.value}); 
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
-const switchMode = () => {
-        setIsSignup((prevIsSignup) => !prevIsSignup);
+  const switchMode = () => {
+    setIsSignup((prevIsSignup) => !prevIsSignup);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const { username, password, phoneNumber, avatarURL } = form;
+
+    const URL = "https://localhost:5000/auth";
+
+    const {
+      data: { token, userId, hashedPassword, fullName },
+    } = await axios.post(`${URL}/${isSignup ? "signup" : "login"}`, {
+      username,
+      password,
+      fullName: form.fullName,
+      phoneNumber,
+      avatarURL,
+    });
+
+    cookies.set("token", token);
+    cookies.set("username", username);
+    cookies.set("fullName", fullName);
+    cookies.set("userId", userId);
+
+    if (isSignup) {
+      cookies.set("phoneNumber", phoneNumber);
+      cookies.set("avatarURL", avatarURL);
+      cookies.set("hashedPassword", hashedPassword);
     }
-
-const handleSubmit = (e) => {
-    e.preventDefault(); 
-}    
-
+    window.location.reload();
+  };
 
   return (
     <div className="auth__form-container">
@@ -108,22 +134,19 @@ const handleSubmit = (e) => {
               <button>{isSignup ? "Sign Up" : "Sign In"}</button>
             </div>
           </form>
-           <div className="auth__form-container_fields-account">
-                        <p>
-                            {isSignup
-                             ? "Already have an account?" 
-                             : "Don't have an account?"
-                             }
-                             <span onClick={switchMode}>
-                             {isSignup ? 'Sign In' : 'Sign Up'}
-                             </span>
-                        </p>
-                    </div>
+          <div className="auth__form-container_fields-account">
+            <p>
+              {isSignup ? "Already have an account?" : "Don't have an account?"}
+              <span onClick={switchMode}>
+                {isSignup ? "Sign In" : "Sign Up"}
+              </span>
+            </p>
+          </div>
         </div>
       </div>
       <div className="auth__form-container_image">
-                <img src={signinImage} alt="sign in" />
-            </div>
+        <img src={signinImage} alt="sign in" />
+      </div>
     </div>
   );
 };
